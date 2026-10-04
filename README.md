@@ -21,7 +21,7 @@ Cursor plugin hook. No extra Python packages are needed.
 ### Install skills (recommended)
 
 ```sh
-npx skills add broberts/vibe-wise-cursor
+npx skills add broberts23/vibe-wise
 ```
 
 This installs the Learn and Reset skills into `.agents/skills/` / `.cursor/skills/`
@@ -241,7 +241,7 @@ your experience level or preferences, just tell the agent; no reset is needed.
 npx skills update
 ```
 
-Or re-run `npx skills add broberts/vibe-wise-cursor`. Your project learning notes
+Or re-run `npx skills add broberts23/vibe-wise`. Your project learning notes
 stay intact; no reset is needed.
 
 ## License

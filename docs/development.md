@@ -35,7 +35,7 @@ backup/write failures, and restoring incomplete onboarding after reset.
 Skills layout (default distribution):
 
 ```sh
-npx skills add broberts/vibe-wise-cursor -a cursor
+npx skills add broberts23/vibe-wise -a cursor
 # or from a local checkout:
 npx skills add ./ -a cursor
 ```
