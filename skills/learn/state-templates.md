@@ -55,7 +55,7 @@ As learning occurs, add a `## Topic` with concise bullets under Introduced,
 Demonstrated understanding, and Needs reinforcement. Record reasoning evidence,
 not quotations of a whole exchange. Product preferences establish requirements;
 they aren't evidence of engineering understanding. Keep learner-proposed reasoning
-distinct from concepts Claude explained. Consolidate repeated entries. Keep each
+distinct from concepts the agent explained. Consolidate repeated entries. Keep each
 topic independently readable so it can be loaded without the whole file.
 While waiting on a checkpoint, keep a short `## Pending decision` section
 with the proposed approach and what reply is awaited. Remove it once resolved.
@@ -64,7 +64,7 @@ confirmation, or implementation approval. Record confirmed choices in the map
 without claiming they are implemented. Keep any proposed coding scope explicit.
 Confirmation covers only the proposal presented. Don't append unmentioned fields,
 behaviors, rejected alternatives, or reasons to the chosen design. Mark unresolved
-details unknown and Claude's suggestions proposed; never attribute them to the learner.
+details unknown and the agent's suggestions proposed; never attribute them to the learner.
 
 ## project-map.md
 
@@ -86,12 +86,12 @@ chosen, and implemented components. Reflect the learner's model refined together
 or verified existing code; don't fill missing relationships with assumed designs.]
 
 ## Data and Trust Boundaries
-[Storage, ownership, auth, external services; unknown when unverified.]
+[Storage, ownership, auth/Entra, external services, RBAC; unknown when unverified.]
 
 ## Build and Deployment
-[Commands and configuration paths verified in the repository.]
+[Commands, Bicep/IaC paths, and configuration verified in the repository.]
 
 ## Unknowns
 [Unresolved technical choices and what needs inspection, including relevant stack,
-storage location/model, data structures, interfaces, and deployment choices.]
+identity model, storage location/model, data structures, interfaces, and deployment choices.]
 ```
