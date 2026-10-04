@@ -1,0 +1,23 @@
+{
+  "name": "vibe-wise",
+  "version": "0.2.0",
+  "description": "You build. AI writes. Learn Azure, Entra ID, Bicep, and Python while the agent writes the code you designed.",
+  "author": {
+    "name": "broberts23"
+  },
+  "repository": "https://github.com/broberts23/vibe-wise",
+  "license": "MIT",
+  "keywords": [
+    "learning",
+    "architecture",
+    "engineering",
+    "azure",
+    "entra",
+    "bicep",
+    "python"
+  ],
+  "logo": "assets/icon.svg",
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": "./mcp.json"
+}

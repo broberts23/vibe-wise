@@ -1,45 +1,69 @@
-<img src=".claude-plugin/icon.svg" alt="VibeWise brain with code brackets" width="96" height="96">
+<img src="assets/icon.svg" alt="VibeWise brain with code brackets" width="96" height="96">
 
 # VibeWise
 
 **You build. AI writes.**
 
-A Claude Code plugin that puts learning first and keeps you in control while AI writes the code you designed. Claude **asks for your approach first**, helps you examine tradeoffs, and explains unfamiliar concepts. You shape the design and decide when it's ready to implement. Claude writes the code, then explains what it changed and why.
+Cursor Agent Skills that put learning first and keep you in control while AI writes the code you designed. The agent **asks for your approach first**, helps you examine tradeoffs, and explains unfamiliar concepts. You shape the design and decide when it's ready to implement. The agent writes the code, then explains what it changed and why.
+
+Tuned for **Azure**, **Entra ID**, **Bicep**, and **Python** Microsoft SDK automation (`azure-identity`, `azure-mgmt-*`, `msgraph-sdk`), with Microsoft Learn MCP wired into teaching when available.
 
 For anyone who wants to learn as they build—whether you're an aspiring engineer, a junior developer, or an experienced engineer exploring an unfamiliar stack. Practice planning how the pieces fit together, anticipating failures, and checking the result while keeping ownership of the decisions.
 
+Based on the upstream [nykooi1/vibe-wise](https://github.com/nykooi1/vibe-wise) Claude Code plugin (MIT).
+
 ## Get started
 
-You need [Claude Code](https://code.claude.com/docs/en/setup) and
-[Python 3](https://www.python.org/downloads/). VibeWise uses Python to restore
-learning context and reset learning notes. No extra Python packages are needed.
+You need [Cursor](https://cursor.com) and [Python 3](https://www.python.org/downloads/).
+VibeWise uses Python to reset learning notes and (optionally) restore context via a
+Cursor plugin hook. No extra Python packages are needed.
 
-VibeWise has been approved for Anthropic's Claude directory, but isn't listed in
-the public community marketplace yet. I expect it to appear soon. In the meantime,
-install it in Claude Code through my GitHub marketplace:
+### Install skills (recommended)
 
-Run these commands **one at a time** in Claude Code. First, add the marketplace:
-
-```text
-/plugin marketplace add nykooi1/vibe-wise
+```sh
+npx skills add broberts/vibe-wise-cursor
 ```
 
-After it finishes, install the plugin:
+This installs the Learn and Reset skills into `.agents/skills/` / `.cursor/skills/`
+(project) or the matching user directories when you choose a global install.
+
+In Cursor Agent chat, run:
 
 ```text
-/plugin install vibe-wise@vibe-wise
+/vibe-wise-learn
 ```
 
-**Enable automatic updates:** open `/plugin` → **Marketplaces** → **vibe-wise** →
-**Enable auto-update**. This is off by default for third-party marketplaces.
+Setup asks one question at a time with numbered choices. Pick **Use defaults** to
+skip preference setup. Then ask the agent to build something. Starting fresh or
+joining an unfamiliar repository both work. For an existing repository, the agent
+first inspects the code and sketches a small system map.
 
-Restart Claude Code in the project you want to work on, then run:
+Skills-only installs do not auto-restore on every new chat. Run `/vibe-wise-learn`
+again to resume from `.vibe-wise/`.
 
-```text
-/vibe-wise:learn
+### Optional: Cursor Plugin (auto-restore + Learn MCP)
+
+For session restore on chat start and automatic Microsoft Learn MCP wiring, install
+this repository as a Cursor Plugin (see [Cursor plugins](https://cursor.com/docs/reference/plugins)).
+The plugin packages the same skills, a `sessionStart` hook, and root `mcp.json`.
+
+### Microsoft Learn MCP (skills-only)
+
+If you stay on skills-only install, add Learn MCP in Cursor settings / `mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "microsoft-learn": {
+      "url": "https://learn.microsoft.com/api/mcp"
+    }
+  }
+}
 ```
 
-Setup asks one question at a time. Use the arrow keys and Enter for choices; pick **Use defaults** to skip preference setup. Then ask Claude to build something. Starting fresh or joining an unfamiliar repository both work. For an existing repository, Claude first inspects the code and sketches a small system map.
+No authentication is required. When available, Learn mode uses
+`microsoft_docs_search`, `microsoft_docs_fetch`, and `microsoft_code_sample_search`
+before teaching Microsoft facts or proposing samples.
 
 ## What it feels like
 
@@ -56,7 +80,7 @@ steps are illustrative; intervening design discussions are omitted.
 A note can be in several folders. Deleting a folder should delete its notes.
 ```
 
-**Claude:**
+**Agent:**
 
 ```text
 ✦ Build checkpoint: Deleting a shared note
@@ -72,7 +96,7 @@ When someone deletes Travel, what should happen to that note in Summer?
 Keep it in Summer. If it has no folders left, keep the note outside any folder.
 ```
 
-**Claude:**
+**Agent:**
 
 ```text
 That separates deleting a folder from deleting a note.
@@ -89,7 +113,7 @@ A links table with note_id and folder_id. Deleting a folder removes its links,
 not the notes.
 ```
 
-**Claude:**
+**Agent:**
 
 ```text
 Each link records one membership. Several links can point to the same note;
@@ -106,21 +130,21 @@ folders per note; loading a folder's notes needs a lookup through those links.
 Confirming records this design. We still need to work through access rules
 and technology choices before writing code.
 
-❯ 1. Confirm and continue
-     This approach makes sense to me; move to the next piece.
-  2. Discuss
-     Ask questions or clarify anything that doesn't make sense before deciding.
+1. Confirm and continue
+   This approach makes sense to me; move to the next piece.
+2. Discuss
+   Ask questions or clarify anything that doesn't make sense before deciding.
 ```
 
 **You:**
 
 ```text
-Confirm and continue.
+1
 ```
 
 *Later, after the remaining choices for this step are worked through...*
 
-**Claude:**
+**Agent:**
 
 ```text
 ✦ Implementation checkpoint: Folder membership
@@ -129,21 +153,21 @@ I'll add the agreed tables and folder-deletion operation, then test that deletin
 a folder preserves its notes and their membership in other folders.
 This step builds storage behavior; the UI comes later.
 
-❯ 1. Implement this step
-     This approach makes sense to me; write the code for this step.
-  2. Discuss
-     Ask questions or clarify anything that doesn't make sense before deciding.
+1. Implement this step
+   This approach makes sense to me; write the code for this step.
+2. Discuss
+   Ask questions or clarify anything that doesn't make sense before deciding.
 ```
 
 **You:**
 
 ```text
-Implement this step.
+1
 ```
 
-*Claude writes the code and runs the tests.*
+*The agent writes the code and runs the tests.*
 
-**Claude:**
+**Agent:**
 
 ```text
 ✦ Implementation report: Folder membership
@@ -153,27 +177,27 @@ Implement this step.
 - Added and ran tests for shared notes and notes left without a folder; both passed.
 ```
 
-You don't need to know the answer already. Claude can explain unfamiliar concepts, sketch the relevant pieces, and help you tackle a smaller question. You stay involved in forming the plan. Answer in plain English; ask for more help or say “skip” whenever you want.
+You don't need to know the answer already. The agent can explain unfamiliar concepts, sketch the relevant pieces, and help you tackle a smaller question. You stay involved in forming the plan. Answer in plain English; ask for more help or say “skip” whenever you want.
 
 Describing what you want sets the requirements. Build Checkpoints ask you to work
 out how it should function; a feature preference doesn't approve an architecture.
 
 | Checkpoint | What happens |
 | --- | --- |
-| **Build** | You reason through how to approach the problem with Claude. |
+| **Build** | You reason through how to approach the problem with the agent. |
 | **Design** | Review the design. **Confirm and continue** records it and continues planning; no code yet. |
-| **Implementation** | Review the specific code changes. **Implement this step** authorizes Claude to make them. |
+| **Implementation** | Review the specific code changes. **Implement this step** authorizes the agent to make them. |
 
 These aren't three mandatory stops. When ready to code, the Implementation
 checkpoint also confirms the design, skipping a separate Design checkpoint.
 Both confirmations offer **Discuss** to ask questions, clarify anything confusing,
 or explore alternatives before deciding.
 
-When Claude proposes additional implementation details, it separates them from your
+When the agent proposes additional implementation details, it separates them from your
 decisions in a short list or table explaining each addition and why it matters.
 You can question or change any item before proceeding.
 
-After implementation, Claude briefly explains what changed, how the key code works,
+After implementation, the agent briefly explains what changed, how the key code works,
 why it fits your decision, any tests it added or updated and what they cover, and
 which checks ran with their results. Ask to dig deeper anywhere it's unclear.
 
@@ -189,42 +213,39 @@ Experience changes the support you get, not your ownership of decisions:
 | Intermediate | Less introductory context; explore interactions and tradeoffs. |
 | Advanced | Probe difficult constraints, failure modes, and design assumptions. |
 
-Everyone reasons first. Claude adapts to what you demonstrate and how familiar you
+Everyone reasons first. The agent adapts to what you demonstrate and how familiar you
 are with the stack. Checkpoint frequency—Light, Normal, or Frequent—is separate.
 
 - “Use fewer checkpoints.”
-- “Focus on backend architecture.”
+- “Focus on Entra app permissions.”
 - “Use multiple-choice questions.”
 - “Just implement this one.”
-- “Pause learning.” Resume with `/vibe-wise:learn`.
+- “Pause learning.” Resume with `/vibe-wise-learn`.
 
-Preferences, learning notes, and a project map live in `.vibe-wise/` in your project. Learning mode resumes in future sessions and after compaction. Add `.vibe-wise/` to your `.gitignore` to keep your notes out of Git; the plugin won't change it silently.
+Preferences, learning notes, and a project map live in `.vibe-wise/` in your project.
+Add `.vibe-wise/` to your `.gitignore` to keep your notes out of Git; the skills won't
+change it silently.
 
-No extra account, backend, or telemetry. Saved notes are included in Claude's context, so your normal Claude Code data settings still apply.
+No extra account, backend, or telemetry. Saved notes are included in the agent's
+context under your normal Cursor data settings.
 
-To start learning this project from scratch, run `/vibe-wise:reset`. It shows the
+To start learning this project from scratch, run `/vibe-wise-reset`. It shows the
 project and asks **Cancel / Reset learning**. After confirmation, it backs up your
 profile, progress, and project map inside the notes directory's `backups/` folder,
 then restarts onboarding. Source code and other projects stay untouched. To change
-your experience level or preferences, just tell Claude; no reset is needed.
+your experience level or preferences, just tell the agent; no reset is needed.
 
 ## Updating
 
-For automatic updates, open `/plugin` → **Marketplaces** → **vibe-wise** →
-**Enable auto-update**. Auto-update is off by default for third-party marketplaces.
-Claude Code notifies you after an update; restart Claude Code to load the new version.
-
-To update manually, run these in your terminal:
-
 ```sh
-claude plugin marketplace update vibe-wise
-claude plugin update vibe-wise@vibe-wise
+npx skills update
 ```
 
-Then restart Claude Code. Your project learning notes stay intact; no reset is needed.
-Run `claude plugin list` to check the installed version.
-[More about plugin updates](https://code.claude.com/docs/en/discover-plugins#keep-plugins-updated).
+Or re-run `npx skills add broberts/vibe-wise-cursor`. Your project learning notes
+stay intact; no reset is needed.
 
 ## License
 
-[MIT](LICENSE). You can use, modify, and share this software, including commercially. Keep the license notice with copies. The software comes without a warranty.
+[MIT](LICENSE). Derived from [nykooi1/vibe-wise](https://github.com/nykooi1/vibe-wise)
+by Noah Kim. You can use, modify, and share this software, including commercially.
+Keep the license notice with copies. The software comes without a warranty.
