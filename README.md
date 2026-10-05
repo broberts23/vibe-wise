@@ -67,73 +67,52 @@ before teaching Microsoft facts or proposing samples.
 
 ## What it feels like
 
-You're building a Notion-style notes app: users sign in, create and edit private
-notes, and organize them into folders. Here, you're working through how notes and
-folders relate—and what should happen when someone deletes a folder.
+You're building a FastAPI app on Azure Container Apps with Cosmos DB behind it:
+Entra app roles separate human Swagger access from machine API callers, browser
+sign-in for `/docs`, and keyless RBAC between services later. Local testing first.
 
-This condensed example is adapted from a real learning session. Later implementation
-steps are illustrative; intervening design discussions are omitted.
+This condensed example is adapted from a real learning session. Intervening
+design discussions are omitted; the wording is illustrative.
+
+After `/vibe-wise-learn`, Learning mode turns on: you own the design, the agent
+asks how you'd approach things, and it writes code only when you agree. Sessions
+are tuned for Azure, Entra ID, Bicep, and Python Microsoft SDK work—you still
+choose the stack. Onboarding uses numbered choices (*New project* / *Existing
+repo* / *Known project*), then experience and preferences.
+
+<img src="docs/demos/learning-mode-onboarding.png" alt="Learning mode onboarding with Azure/Entra tuning and numbered project choices" width="720">
 
 **You:**
 
 ```text
-A note can be in several folders. Deleting a folder should delete its notes.
+one app. two roles. role.admin for human swagger access,
+role.service for machine direct api access.
 ```
 
 **Agent:**
 
 ```text
-✦ Build checkpoint: Deleting a shared note
+One app with two roles is a clean fit: the API is the single resource, and the
+roles claim separates who may use Swagger as a human vs who may call the API
+as a machine.
 
-"Trip ideas" is in both Travel and Summer. Deleting it removes it from both.
+✦ Concept: App roles vs who can hold them
 
-When someone deletes Travel, what should happen to that note in Summer?
-```
+In Entra, each app role has allowedMemberTypes. User roles are assignable to
+people (or groups); Application roles are assignable to other apps / managed
+identities for client-credentials. Your role.admin / role.service split usually
+maps to User vs Application so a daemon cannot get the human Swagger role by
+accident.
 
-**You:**
+✦ Design checkpoint: One app, two roles
 
-```text
-Keep it in Summer. If it has no folders left, keep the note outside any folder.
-```
-
-**Agent:**
-
-```text
-That separates deleting a folder from deleting a note.
-
-✦ Build checkpoint: Connecting notes and folders
-
-How would you represent which folders a note belongs to, without copying the note?
-```
-
-**You:**
-
-```text
-A links table with note_id and folder_id. Deleting a folder removes its links,
-not the notes.
-```
-
-**Agent:**
-
-```text
-Each link records one membership. Several links can point to the same note;
-a note with no links is unfiled.
-
-notes ← folder links → folders
-
-✦ Design checkpoint: Folder membership
-
-Proposed: store notes once and track folder membership in a links table.
-Deleting a folder removes its links and keeps the notes. This supports multiple
-folders per note; loading a folder's notes needs a lookup through those links.
-
-Confirming records this design. We still need to work through access rules
-and technology choices before writing code.
+Your decisions
+- One app registration
+- role.admin — human Swagger access
+- role.service — machine direct API access
 
 1. Confirm and continue
-   This approach makes sense to me; move to the next piece.
 2. Discuss
-   Ask questions or clarify anything that doesn't make sense before deciding.
 ```
 
 **You:**
@@ -142,42 +121,66 @@ and technology choices before writing code.
 1
 ```
 
-*Later, after the remaining choices for this step are worked through...*
-
-**Agent:**
-
-```text
-✦ Implementation checkpoint: Folder membership
-
-I'll add the agreed tables and folder-deletion operation, then test that deleting
-a folder preserves its notes and their membership in other folders.
-This step builds storage behavior; the UI comes later.
-
-1. Implement this step
-   This approach makes sense to me; write the code for this step.
-2. Discuss
-   Ask questions or clarify anything that doesn't make sense before deciding.
-```
+*Later, creating the app registration in the portal…*
 
 **You:**
 
 ```text
-1
+I'll create the app in the Entra portal. Name: project-fastapi-swagger.
+Application ID URI: api://{appId}.
+I don't know what the scopes and Authorized client applications will be.
 ```
-
-*The agent writes the code and runs the tests.*
 
 **Agent:**
 
 ```text
-✦ Implementation report: Folder membership
-
-- Added the schema migration: each membership references one note and one folder.
-- Added folder deletion: removes the folder and its links, preserving note content.
-- Added and ran tests for shared notes and notes left without a folder; both passed.
+You're clear on portal + name + Application ID URI; scopes and authorized
+clients are the gap. Pulling official docs, then explaining those pieces so
+you can decide.
 ```
 
-You don't need to know the answer already. The agent can explain unfamiliar concepts, sketch the relevant pieces, and help you tackle a smaller question. You stay involved in forming the plan. Answer in plain English; ask for more help or say “skip” whenever you want.
+*The agent searches Microsoft Learn (`microsoft_docs_search`) and updates
+`.vibe-wise/progress.md` before teaching—grounding Microsoft facts in Learn,
+not guessing.*
+
+<img src="docs/demos/learn-mcp-entra-progress.png" alt="Agent using Microsoft Docs Search then updating progress.md while teaching Entra scopes" width="720">
+
+**Agent:**
+
+```text
+That uncertainty is normal — scopes and “Authorized client applications” sit
+next to app roles but do different jobs.
+
+✦ Concept: Scopes vs app roles
+
+Scopes (Expose an API) are delegated permissions. They show up in the token’s
+scp claim when a signed-in user’s client asks for access. App roles are what
+you already chose: they show up in the roles claim. Machines using client
+credentials get application roles; humans get user roles when assigned.
+
+So for your design: roles do the real authorization; a scope is mainly the
+“ticket into a user access token” for Swagger’s browser flow.
+
+✦ Why this matters
+
+If you skip a delegated scope, Swagger’s user login may fail to get a usable
+access token for your API even though role.admin exists. If you over-build
+scopes that mirror every operation, you’ll maintain two permission models
+(scp and roles) when you already decided roles are the splitter.
+
+✦ Build checkpoint: Scopes and authorized clients
+
+For this one-app portal setup, what do you want for:
+1. Scope(s) under Expose an API, and
+2. Authorized client applications (empty, same app’s client ID, or other)?
+
+Say it in your own words; ask for options if you want concrete proposals.
+```
+
+You reason first. Numbered confirmations come after you've stated an approach—
+or when the agent offers a short menu so you can pick without inventing the
+whole answer. You don't need to know the answer already: ask for more help or
+say “skip” whenever you want.
 
 Describing what you want sets the requirements. Build Checkpoints ask you to work
 out how it should function; a feature preference doesn't approve an architecture.
@@ -201,7 +204,10 @@ After implementation, the agent briefly explains what changed, how the key code 
 why it fits your decision, any tests it added or updated and what they cover, and
 which checks ran with their results. Ask to dig deeper anywhere it's unclear.
 
-Small diagrams help you trace data, understand relationships, and see how the system fits together.
+When Microsoft facts are involved, Learn mode prefers `microsoft_docs_search`,
+`microsoft_docs_fetch`, and `microsoft_code_sample_search` before teaching or
+proposing samples. Small diagrams help you trace data, understand relationships,
+and see how the system fits together.
 
 ## Make it yours
 
