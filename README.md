@@ -80,6 +80,8 @@ are tuned for Azure, Entra ID, Bicep, and Python Microsoft SDK work—you still
 choose the stack. Onboarding uses numbered choices (*New project* / *Existing
 repo* / *Known project*), then experience and preferences.
 
+<img src="docs/demos/learning-mode-onboarding.png" alt="Learning mode onboarding with Azure/Entra tuning and numbered project choices" width="720">
+
 **You:**
 
 ```text
@@ -141,6 +143,8 @@ you can decide.
 `.vibe-wise/progress.md` before teaching—grounding Microsoft facts in Learn,
 not guessing.*
 
+<img src="docs/demos/learn-mcp-entra-progress.png" alt="Agent using Microsoft Docs Search then updating progress.md while teaching Entra scopes" width="720">
+
 **Agent:**
 
 ```text
@@ -177,12 +181,6 @@ You reason first. Numbered confirmations come after you've stated an approach—
 or when the agent offers a short menu so you can pick without inventing the
 whole answer. You don't need to know the answer already: ask for more help or
 say “skip” whenever you want.
-
-<p align="center">
-  <img src="docs/demos/learning-mode-onboarding.png" alt="Learning mode onboarding with Azure/Entra tuning and numbered project choices" width="720">
-  <br>
-  <img src="docs/demos/learn-mcp-entra-progress.png" alt="Agent using Microsoft Docs Search then updating progress.md while teaching Entra scopes" width="720">
-</p>
 
 Describing what you want sets the requirements. Build Checkpoints ask you to work
 out how it should function; a feature preference doesn't approve an architecture.
